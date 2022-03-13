@@ -1,9 +1,9 @@
 from fastapi import HTTPException
 from passlib.context import CryptContext
 import pymysql
-
 from db import database
 from managers.auth import AuthManager
+from managers.send_email import send_email_async
 from models import user, RoleType
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -20,6 +20,7 @@ class UserManager:
         except Exception:
             raise HTTPException(500, "Something went wrong trying to insert a user")
         user_do = await database.fetch_one(user.select().where(user.c.id == id_))
+        await send_email_async(user_do)
         return AuthManager.encode_token(user_do)
 
     @staticmethod
@@ -46,3 +47,5 @@ class UserManager:
         await database.execute(
             user.update().where(user.c.id == user_id).values(role=role)
         )
+
+

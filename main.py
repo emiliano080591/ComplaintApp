@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from resources.routes import api_router
 from db import database
 
+import os
+
 origins = ["http://localhost", "http://localhost:4200"]
 app = FastAPI()
 app.include_router(api_router)
